@@ -18,7 +18,9 @@ builder.Services.AddCors(options =>
         name: "FrontendOrigin",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000");
+            policy.WithOrigins("http://localhost:3000")
+                .AllowAnyHeader()
+                .WithMethods("GET", "POST");
         });
 });
 
@@ -33,5 +35,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("FrontendOrigin");
+
 app.MapControllers();
 app.Run();

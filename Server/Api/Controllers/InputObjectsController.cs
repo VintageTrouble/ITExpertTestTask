@@ -20,11 +20,21 @@ public class InputObjectsController : ControllerBase
     }
 
     [HttpPost("/inputobjects")]
-    public async Task<IActionResult> SaveObjects([FromBody] IEnumerable<InputObjectRequest> inputObjects)
+    public async Task<IActionResult> SaveObjects([FromBody] Dictionary<string, string> values)
     {
-        await _sender.Send(new BulkCreateInputObjectsCommand(inputObjects));
-        
-        return Ok();
+        try
+        {
+            var inputObjects = values
+                .Select(x => new InputObjectRequest(int.Parse(x.Key), x.Value));
+
+            await _sender.Send(new BulkCreateInputObjectsCommand(inputObjects));
+
+            return Ok();
+        }
+        catch(FormatException)
+        {
+            return BadRequest("You shoud pass code as string. For example: \"1\":\"Value\"");
+        }
     }
 
     [HttpGet("/inputobjects")]
